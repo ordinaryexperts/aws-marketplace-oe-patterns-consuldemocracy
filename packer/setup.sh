@@ -40,7 +40,9 @@ cd -
 # collectd for metrics
 apt-get -y install collectd
 
-# TODO consul
+# Start Consul setup
+# TODO
+# End Consul setup
 
 # AMI hardening
 
