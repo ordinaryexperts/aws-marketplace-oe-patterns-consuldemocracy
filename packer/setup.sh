@@ -41,7 +41,13 @@ cd -
 apt-get -y install collectd
 
 # Start Consul setup
-# TODO
+python3 -m pip install ansible
+git clone https://github.com/consul/installer /root/installer
+cd /root/installer
+echo "[servers]\nlocalhost ansible_user=root\n" >> /root/installer/hosts
+rm /root/installer/hosts.example
+ansible-playbook -v consul.yml --connection=local -i hosts
+cd -
 # End Consul setup
 
 # AMI hardening

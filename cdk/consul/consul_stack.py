@@ -64,7 +64,7 @@ class ConsulStack(Stack):
         )
 
 
-        alb = Alb(self, "Alb", asg=asg, vpc=vpc)
+        alb = Alb(self, "Alb", asg=asg, vpc=vpc, target_group_https = False)
         asg.asg.target_group_arns = [ alb.target_group.ref ]
 
         dns = Dns(self, "Dns", alb=alb)
