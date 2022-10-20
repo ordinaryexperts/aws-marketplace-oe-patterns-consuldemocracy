@@ -10,7 +10,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -y update && apt-get -y upgrade
 
 # install helpful utilities
-apt-get -y install curl git jq ntp software-properties-common unzip vim wget zip
+apt-get -y install curl git jq ntp software-properties-common unzip vim wget zip xfsprogs
 
 # install latest CFN utilities
 apt-get -y install python3-pip
@@ -41,12 +41,14 @@ cd -
 apt-get -y install collectd
 
 # Start Consul setup
-python3 -m pip install ansible
+ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+python3 -m pip install ansible python3-psycopg2 postgresql-client
 git clone https://github.com/consul/installer /root/installer
 cd /root/installer
 printf "[servers]\nlocalhost ansible_user=root\n" > /root/installer/hosts
 rm /root/installer/hosts.example
-ansible-playbook -v consul.yml --connection=local -i hosts
+# ansible-playbook -v consul.yml --connection=local -i hosts
+# rm -rf /root/.ssh/id_rsa*
 cd -
 # End Consul setup
 

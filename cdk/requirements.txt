@@ -1,3 +1,3 @@
 aws-cdk-lib==2.20.0
 constructs>=10.0.0,<11.0.0
-oe-patterns-cdk-common@git+https://github.com/ordinaryexperts/aws-marketplace-oe-patterns-cdk-common@82c3a5a320a9dea85996974377a71387e9c01610
+oe-patterns-cdk-common@git+https://github.com/ordinaryexperts/aws-marketplace-oe-patterns-cdk-common@3.1.0
