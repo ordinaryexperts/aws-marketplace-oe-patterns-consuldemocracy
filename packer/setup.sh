@@ -42,7 +42,8 @@ apt-get -y install collectd
 
 # Start Consul setup
 ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
-python3 -m pip install ansible python3-psycopg2 postgresql-client
+apt-get -y install libpq-dev
+python3 -m pip install ansible psycopg2
 git clone https://github.com/consul/installer /root/installer
 cd /root/installer
 printf "[servers]\nlocalhost ansible_user=root\n" > /root/installer/hosts

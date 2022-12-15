@@ -21,10 +21,10 @@ from oe_patterns_cdk_common.ses import Ses
 from oe_patterns_cdk_common.util import Util
 from oe_patterns_cdk_common.vpc import Vpc
 
-AMI_ID="ami-0d8b44c932b96e92e"
-AMI_NAME="ordinary-experts-patterns-consul--20221215-0746"
+AMI_ID="ami-0f895185bc8a77612"
+AMI_NAME="ordinary-experts-patterns-consul--20221215-0831"
 generated_ami_ids = {
-    "us-east-1": "ami-0d8b44c932b96e92e"
+    "us-east-1": "ami-0f895185bc8a77612"
 }
 # End generated code block.
 
@@ -70,10 +70,7 @@ class ConsulStack(Stack):
         asg = Asg(
             self,
             "Asg",
-            allow_associate_address = True,
-            data_volume_size = 100,
             secret_arns=[db_secret.secret_arn()],
-            singleton = True,
             default_instance_type = "t3.xlarge",
             user_data_contents = launch_config_user_data,
             user_data_variables = {},
