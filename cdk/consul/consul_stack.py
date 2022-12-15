@@ -13,13 +13,18 @@ from constructs import Construct
 
 from oe_patterns_cdk_common.alb import Alb
 from oe_patterns_cdk_common.asg import Asg
+from oe_patterns_cdk_common.assets_bucket import AssetsBucket
+from oe_patterns_cdk_common.aurora_cluster import AuroraPostgresql
+from oe_patterns_cdk_common.db_secret import DbSecret
 from oe_patterns_cdk_common.dns import Dns
+from oe_patterns_cdk_common.ses import Ses
+from oe_patterns_cdk_common.util import Util
 from oe_patterns_cdk_common.vpc import Vpc
 
-AMI_ID="ami-0e5d873024f9f82f3"
-AMI_NAME="ordinary-experts-patterns-consul--20220819-0303"
+AMI_ID="ami-0d8b44c932b96e92e"
+AMI_NAME="ordinary-experts-patterns-consul--20221215-0746"
 generated_ami_ids = {
-    "us-east-1": "ami-0e5d873024f9f82f3"
+    "us-east-1": "ami-0d8b44c932b96e92e"
 }
 # End generated code block.
 
@@ -34,7 +39,32 @@ class ConsulStack(Stack):
             "Vpc"
         )
 
-        # asg
+        dns = Dns(self, "Dns")
+
+        bucket = AssetsBucket(
+            self,
+            "AssetsBucket"
+        )
+
+        ses = Ses(
+            self,
+            "Ses",
+            hosted_zone_name=dns.route_53_hosted_zone_name_param.value_as_string,
+            additional_iam_user_policies=[bucket.user_policy]
+        )
+
+        db_secret = DbSecret(
+            self,
+            "DbSecret"
+        )
+
+        db = AuroraPostgresql(
+            self,
+            "Db",
+            db_secret=db_secret,
+            vpc=vpc
+        )
+
         with open("consul/launch_config_user_data.sh") as f:
             launch_config_user_data = f.read()
         asg = Asg(
@@ -42,12 +72,15 @@ class ConsulStack(Stack):
             "Asg",
             allow_associate_address = True,
             data_volume_size = 100,
+            secret_arns=[db_secret.secret_arn()],
             singleton = True,
             default_instance_type = "t3.xlarge",
             user_data_contents = launch_config_user_data,
             user_data_variables = {},
             vpc = vpc
         )
+        asg.asg.node.add_dependency(db.db_primary_instance)
+        db_ingress = Util.add_sg_ingress(db, asg.sg)
 
         ami_mapping={
             "AMI": {
@@ -62,8 +95,7 @@ class ConsulStack(Stack):
             mapping=ami_mapping
         )
 
-
         alb = Alb(self, "Alb", asg=asg, vpc=vpc, target_group_https = False)
         asg.asg.target_group_arns = [ alb.target_group.ref ]
 
-        dns = Dns(self, "Dns", alb=alb)
+        dns.add_alb(alb)
