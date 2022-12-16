@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM debian:buster
 
 ENV IN_DOCKER=true
 COPY setup.sh /tmp/setup.sh

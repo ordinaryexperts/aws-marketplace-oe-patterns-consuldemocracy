@@ -21,10 +21,10 @@ from oe_patterns_cdk_common.ses import Ses
 from oe_patterns_cdk_common.util import Util
 from oe_patterns_cdk_common.vpc import Vpc
 
-AMI_ID="ami-0f895185bc8a77612"
-AMI_NAME="ordinary-experts-patterns-consul--20221215-0831"
+AMI_ID="ami-045a75cc535f2e466"
+AMI_NAME="ordinary-experts-patterns-consul--20221215-0925"
 generated_ami_ids = {
-    "us-east-1": "ami-0f895185bc8a77612"
+    "us-east-1": "ami-045a75cc535f2e466"
 }
 # End generated code block.
 
