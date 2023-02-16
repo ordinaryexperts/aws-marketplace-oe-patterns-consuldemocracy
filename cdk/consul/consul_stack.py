@@ -65,14 +65,14 @@ class ConsulStack(Stack):
             vpc=vpc
         )
 
-        with open("consul/launch_config_user_data.sh") as f:
-            launch_config_user_data = f.read()
+        with open("consul/user_data.sh") as f:
+            user_data = f.read()
         asg = Asg(
             self,
             "Asg",
             secret_arns=[db_secret.secret_arn()],
             default_instance_type = "t3.xlarge",
-            user_data_contents = launch_config_user_data,
+            user_data_contents = user_data,
             user_data_variables = {},
             vpc = vpc
         )
