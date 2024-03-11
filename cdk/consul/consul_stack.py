@@ -21,10 +21,10 @@ from oe_patterns_cdk_common.ses import Ses
 from oe_patterns_cdk_common.util import Util
 from oe_patterns_cdk_common.vpc import Vpc
 
-AMI_ID="ami-045a75cc535f2e466"
-AMI_NAME="ordinary-experts-patterns-consul--20221215-0925"
+AMI_ID="ami-07cae14bfee3998fc"
+AMI_NAME="ordinary-experts-patterns-consul-4c6bb45-20240311-0706"
 generated_ami_ids = {
-    "us-east-1": "ami-045a75cc535f2e466"
+    "us-east-1": "ami-07cae14bfee3998fc"
 }
 # End generated code block.
 
@@ -61,6 +61,7 @@ class ConsulStack(Stack):
         db = AuroraPostgresql(
             self,
             "Db",
+            database_name="consul_production",
             db_secret=db_secret,
             vpc=vpc
         )
@@ -70,10 +71,17 @@ class ConsulStack(Stack):
         asg = Asg(
             self,
             "Asg",
-            secret_arns=[db_secret.secret_arn()],
+            secret_arns=[db_secret.secret_arn(), ses.secret_arn()],
             default_instance_type = "t3.xlarge",
+            use_graviton = False,
             user_data_contents = user_data,
-            user_data_variables = {},
+            user_data_variables={
+                "AssetsBucketName": bucket.bucket_name(),
+                "DbSecretArn": db_secret.secret_arn(),
+                "Hostname": dns.hostname(),
+                "HostedZoneName": dns.route_53_hosted_zone_name_param.value_as_string,
+                "InstanceSecretName": Aws.STACK_NAME + "/instance/credentials"
+            },
             vpc = vpc
         )
         asg.asg.node.add_dependency(db.db_primary_instance)
@@ -92,7 +100,12 @@ class ConsulStack(Stack):
             mapping=ami_mapping
         )
 
-        alb = Alb(self, "Alb", asg=asg, vpc=vpc, target_group_https = False)
+        alb = Alb(
+            self,
+            "Alb",
+            asg=asg,
+            vpc=vpc
+        )
         asg.asg.target_group_arns = [ alb.target_group.ref ]
 
         dns.add_alb(alb)
