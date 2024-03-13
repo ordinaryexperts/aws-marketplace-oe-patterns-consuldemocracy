@@ -142,6 +142,8 @@ cat <<EOF > /root/installer/aws_ami.yml
     - timezone
 EOF
 ansible-playbook -v aws_ami.yml --connection=local -i hosts
+echo "gem 'aws-sdk-s3', '~> 1.144'" >> /home/deploy/consul/current/Gemfile_custom
+ansible-playbook -v aws_ami.yml --connection=local -i hosts
 rm -rf /home/deploy/.ssh
 rm -rf /root/.ssh
 
@@ -169,6 +171,47 @@ cat <<EOF > /root/installer/aws_boot.yml
     - rails_boot
     - puma
 EOF
+
+pip install boto3
+cat <<EOF > /root/check-secrets.py
+#!/usr/bin/env python3
+
+import boto3
+import json
+import subprocess
+import sys
+import uuid
+
+region_name = sys.argv[1]
+secret_name = sys.argv[2]
+
+client = boto3.client("secretsmanager", region_name=region_name)
+response = client.list_secrets(
+  Filters=[{"Key": "name", "Values": [secret_name]}]
+)
+arn = response["SecretList"][0]["ARN"]
+response = client.get_secret_value(
+  SecretId=arn
+)
+current_secret = json.loads(response["SecretString"])
+needs_update = False
+
+if not 'secret_key_base' in current_secret:
+    needs_update = True
+    cmd = "random_value=\$(seed=\$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 64; echo \$seed | sha256sum | awk '{print substr(\$1, 1, 64)}'); echo \$random_value"
+    output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8').strip()
+    current_secret['secret_key_base'] = output
+
+if needs_update:
+  client.update_secret(
+    SecretId=arn,
+    SecretString=json.dumps(current_secret)
+  )
+else:
+  print('Secrets already generated - no action needed.')
+EOF
+chown root:root /root/check-secrets.py
+chmod 744 /root/check-secrets.py
 
 cd -
 # End Consul setup

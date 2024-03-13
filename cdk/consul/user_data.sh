@@ -34,6 +34,8 @@ openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
 cp /root/installer/roles/letsencrypt/templates/options-ssl-nginx.conf /etc/letsencrypt/options-ssl-nginx.conf
 openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
 
+/root/check-secrets.py ${AWS::Region} ${InstanceSecretName}
+
 aws ssm get-parameter \
     --name "/aws/reference/secretsmanager/${InstanceSecretName}" \
     --with-decryption \
@@ -43,6 +45,7 @@ aws ssm get-parameter \
 ACCESS_KEY_ID=$(cat /opt/oe/patterns/instance.json | jq -r .access_key_id)
 SECRET_ACCESS_KEY=$(cat /opt/oe/patterns/instance.json | jq -r .secret_access_key)
 SMTP_PASSWORD=$(cat /opt/oe/patterns/instance.json | jq -r .smtp_password)
+SECRET_KEY_BASE=$(cat /opt/oe/patterns/instance.json | jq -r .secret_key_base)
 
 cat <<EOF > /home/deploy/consul/shared/config/database.yml
 default: &default
@@ -77,7 +80,7 @@ http_basic_auth: &http_basic_auth
   http_basic_auth: true
 
 production:
-  secret_key_base: "asdflaskjfdlsakjfdsakjfdsadlkfjsaddfkjlsajfaddslkjfdsadlkfjdsadlfkjsadfdlksajdf"
+  secret_key_base: "$SECRET_KEY_BASE"
   server_name: "${Hostname}"
   # time_zone: ""
   mailer_delivery_method: :smtp
@@ -87,7 +90,7 @@ production:
     :domain: "${HostedZoneName}"
     :user_name: "$ACCESS_KEY_ID"
     :password: "$SMTP_PASSWORD"
-    :authentication: "plain"
+    :authentication: "login"
     :enable_starttls_auto: true
   force_ssl: true
   delay_jobs: true
@@ -128,6 +131,26 @@ production:
   wordpress_oauth2_site: ""
   <<: *maps
   <<: *apis
+EOF
+
+rm /home/deploy/consul/current/config/storage.yml
+cat <<EOF > /home/deploy/consul/current/config/storage.yml
+local:
+  service: TenantDisk
+  root: <%= Rails.root.join("storage") %>
+
+s3:
+  service: S3
+  access_key_id: $ACCESS_KEY_ID
+  secret_access_key: $SECRET_ACCESS_KEY
+  region: ${AWS::Region}
+  bucket: ${AssetsBucketName}
+EOF
+cat <<EOF > /home/deploy/consul/current/config/environments/custom/production.rb
+Rails.application.configure do
+  # Store uploaded files on the s3
+  config.active_storage.service = :s3
+end
 EOF
 
 ln -s /home/deploy/consul/shared/config/database.yml /home/deploy/consul/current/config/database.yml
