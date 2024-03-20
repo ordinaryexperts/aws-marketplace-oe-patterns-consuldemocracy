@@ -95,6 +95,42 @@ cat <<EOF > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
             "log_group_name": "ASG_SYSTEM_LOG_GROUP_PLACEHOLDER",
             "log_stream_name": "{instance_id}-/var/log/amazon/ssm/errors.log",
             "timezone": "UTC"
+          },
+          {
+            "file_path": "/home/deploy/consul/shared/log/delayed_job.log",
+            "log_group_name": "ASG_APP_LOG_GROUP_PLACEHOLDER",
+            "log_stream_name": "{instance_id}-/home/deploy/consul/shared/log/delayed_job.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/home/deploy/consul/shared/log/production.log",
+            "log_group_name": "ASG_APP_LOG_GROUP_PLACEHOLDER",
+            "log_stream_name": "{instance_id}-/home/deploy/consul/shared/log/production.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/home/deploy/consul/shared/log/puma_access.log",
+            "log_group_name": "ASG_APP_LOG_GROUP_PLACEHOLDER",
+            "log_stream_name": "{instance_id}-/home/deploy/consul/shared/log/puma_access.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/home/deploy/consul/shared/log/puma_error.log",
+            "log_group_name": "ASG_APP_LOG_GROUP_PLACEHOLDER",
+            "log_stream_name": "{instance_id}-/home/deploy/consul/shared/log/puma_error.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/nginx/access.log",
+            "log_group_name": "ASG_APP_LOG_GROUP_PLACEHOLDER",
+            "log_stream_name": "{instance_id}-/var/log/nginx/access.log",
+            "timezone": "UTC"
+          },
+          {
+            "file_path": "/var/log/nginx/error.log",
+            "log_group_name": "ASG_APP_LOG_GROUP_PLACEHOLDER",
+            "log_stream_name": "{instance_id}-/var/log/nginx/error.log",
+            "timezone": "UTC"
           }
         ]
       }
@@ -146,6 +182,11 @@ echo "gem 'aws-sdk-s3', '~> 1.144'" >> /home/deploy/consul/current/Gemfile_custo
 ansible-playbook -v aws_ami.yml --connection=local -i hosts
 rm -rf /home/deploy/.ssh
 rm -rf /root/.ssh
+rm -rf /home/deploy/consul/current/log/*
+
+# https://medium.com/@igkuz/managing-unicorn-puma-with-systemd-93e95f75d1ae
+echo "export XDG_RUNTIME_DIR=/run/user/`id -u`" >> /home/deploy/.profile
+loginctl enable-linger deploy
 
 apt-get install -y nginx
 

@@ -148,7 +148,7 @@ s3:
 EOF
 cat <<EOF > /home/deploy/consul/current/config/environments/custom/production.rb
 Rails.application.configure do
-  # Store uploaded files on the s3
+  # Store uploaded files on s3
   config.active_storage.service = :s3
 end
 EOF
@@ -159,5 +159,33 @@ ln -s /home/deploy/consul/shared/config/secrets.yml /home/deploy/consul/current/
 cd /root/installer
 sed -i 's/#domain: your_domain.com/domain: ${Hostname}/' group_vars/all
 ansible-playbook -v aws_boot.yml --connection=local -i hosts
+
+sed -i "/client_max_body_size/a\  location /elb-check { access_log off; return 200 'ok'; add_header Content-Type text/plain; }" /etc/nginx/sites-enabled/default
+service nginx restart
+
+cat <<EOF > /etc/systemd/system/delayed_job.service
+[Unit]
+Description=Delayed Job
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/home/deploy/consul/current
+Environment="PATH=/bin:/usr/bin:/home/deploy/.fnm/:\$PATH"
+Environment="RAILS_ENV=production"
+ExecStart=/usr/bin/bash -c 'eval "\$(fnm env --shell=bash)" && source /home/deploy/.rvm/scripts/rvm && fnm exec bin/delayed_job -m -n 2 restart &>> /home/deploy/consul/current/log/delayed_job.log'
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl enable delayed_job
+systemctl start delayed_job
+
+wget https://localhost --no-check-certificate
 success=$?
+rm -f index.html
 cfn-signal --exit-code $success --stack ${AWS::StackName} --resource Asg --region ${AWS::Region}

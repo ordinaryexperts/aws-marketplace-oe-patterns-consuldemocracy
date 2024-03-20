@@ -21,10 +21,10 @@ from oe_patterns_cdk_common.ses import Ses
 from oe_patterns_cdk_common.util import Util
 from oe_patterns_cdk_common.vpc import Vpc
 
-AMI_ID="ami-07a47bbb958087ae6"
-AMI_NAME="ordinary-experts-patterns-consul-f858ec6-20240313-0915"
+AMI_ID="ami-0b927208295f3f2f1"
+AMI_NAME="ordinary-experts-patterns-consul-3c4bbeb-20240315-0210"
 generated_ami_ids = {
-    "us-east-1": "ami-07a47bbb958087ae6"
+    "us-east-1": "ami-0b927208295f3f2f1"
 }
 # End generated code block.
 
@@ -104,6 +104,7 @@ class ConsulStack(Stack):
             self,
             "Alb",
             asg=asg,
+            health_check_path = "/elb-check",
             vpc=vpc
         )
         asg.asg.target_group_arns = [ alb.target_group.ref ]
