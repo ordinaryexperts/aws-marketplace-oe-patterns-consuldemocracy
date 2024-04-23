@@ -146,7 +146,7 @@ apt-get -y install libpq-dev
 python3 -m pip install ansible psycopg2
 git clone https://github.com/consul/installer /root/installer
 cd /root/installer
-git checkout 2.1.0
+git checkout 2.1.1
 printf "[servers]\nlocalhost ansible_user=root\n" > /root/installer/hosts
 rm /root/installer/hosts.example
 cp -r roles/rails roles/rails_ami
@@ -238,11 +238,15 @@ current_secret = json.loads(response["SecretString"])
 needs_update = False
 
 if not 'secret_key_base' in current_secret:
-    needs_update = True
-    cmd = "random_value=\$(seed=\$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 64; echo \$seed | sha256sum | awk '{print substr(\$1, 1, 64)}'); echo \$random_value"
-    output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8').strip()
-    current_secret['secret_key_base'] = output
-
+  needs_update = True
+  cmd = "random_value=\$(seed=\$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 64; echo \$seed | sha256sum | awk '{print substr(\$1, 1, 64)}'); echo \$random_value"
+  output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8').strip()
+  current_secret['secret_key_base'] = output
+if not 'admin_password' in current_secret:
+  needs_update = True
+  cmd = "random_value=\$(seed=\$(date +%s%N); tr -dc '[:alnum:]' < /dev/urandom | head -c 16; echo \$seed | sha256sum | awk '{print substr(\$1, 1, 16)}'); echo \$random_value"
+  output = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True).stdout.decode('utf-8').strip()
+  current_secret['admin_password'] = output
 if needs_update:
   client.update_secret(
     SecretId=arn,

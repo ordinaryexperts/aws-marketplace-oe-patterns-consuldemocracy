@@ -46,6 +46,7 @@ ACCESS_KEY_ID=$(cat /opt/oe/patterns/instance.json | jq -r .access_key_id)
 SECRET_ACCESS_KEY=$(cat /opt/oe/patterns/instance.json | jq -r .secret_access_key)
 SMTP_PASSWORD=$(cat /opt/oe/patterns/instance.json | jq -r .smtp_password)
 SECRET_KEY_BASE=$(cat /opt/oe/patterns/instance.json | jq -r .secret_key_base)
+ADMIN_PASSWORD=$(cat /opt/oe/patterns/instance.json | jq -r .admin_password)
 
 cat <<EOF > /home/deploy/consul/shared/config/database.yml
 default: &default
@@ -158,6 +159,14 @@ ln -s /home/deploy/consul/shared/config/secrets.yml /home/deploy/consul/current/
 
 cd /root/installer
 sed -i 's/#domain: your_domain.com/domain: ${Hostname}/' group_vars/all
+# update AdminEmail
+if [ -n "${AdminEmail}" ]; then
+    ADMIN_EMAIL="${AdminEmail}"
+else
+    ADMIN_EMAIL="admin@${HostedZoneName}"
+fi
+sed -i "s/12345678/$ADMIN_PASSWORD/g" /home/deploy/consul/current/db/seeds.rb
+sed -i "s/admin@consul.dev/$ADMIN_EMAIL/g" /home/deploy/consul/current/db/seeds.rb
 ansible-playbook -v aws_boot.yml --connection=local -i hosts
 
 sed -i "/client_max_body_size/a\  location /elb-check { access_log off; return 200 'ok'; add_header Content-Type text/plain; }" /etc/nginx/sites-enabled/default
@@ -188,4 +197,6 @@ systemctl start delayed_job
 wget https://localhost --no-check-certificate
 success=$?
 rm -f index.html
+echo hi
+success=$?
 cfn-signal --exit-code $success --stack ${AWS::StackName} --resource Asg --region ${AWS::Region}
