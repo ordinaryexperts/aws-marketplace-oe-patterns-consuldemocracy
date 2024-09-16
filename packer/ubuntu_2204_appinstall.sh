@@ -146,7 +146,7 @@ apt-get -y install libpq-dev
 python3 -m pip install ansible psycopg2
 git clone https://github.com/consul/installer /root/installer
 cd /root/installer
-git checkout 2.1.1
+git checkout 2.2.0
 printf "[servers]\nlocalhost ansible_user=root\n" > /root/installer/hosts
 rm /root/installer/hosts.example
 cp -r roles/rails roles/rails_ami

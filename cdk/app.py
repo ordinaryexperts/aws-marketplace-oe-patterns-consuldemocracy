@@ -18,6 +18,7 @@ app = cdk.App()
 ConsulStack(
     app,
     "oe-patterns-consul-{}".format(os.environ['USER']),
-    env=env_oe_patterns_dev_us_east_1
+    env=env_oe_patterns_dev_us_east_1,
+    synthesizer=cdk.DefaultStackSynthesizer(generate_bootstrap_version_rule=False)
 )
 app.synth()
