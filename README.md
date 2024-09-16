@@ -1,2 +1,3 @@
-# aws-marketplace-oe-patterns-consul
-AWS Pattern for Consul - Citizen Participation and Open Government Application
+# aws-marketplace-oe-patterns-consuldemocracy
+
+AWS Pattern for [CONSUL DEMOCRACY](https://consuldemocracy.org/) - Citizen Participation and Open Government Application
