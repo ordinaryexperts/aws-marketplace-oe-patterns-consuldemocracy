@@ -158,7 +158,7 @@ An optional email address is collected as part of the CloudFormation parameters 
 "FCP Dimension24 Description": ""
 "FCP Dimension24 Rate": ""
 "Clusters and AWS Resources Topology 1: Title": "Ordinary Experts CONSUL DEMOCRACY Pattern"
-"Clusters and AWS Resources Topology 1: AWS Calculator Link": "TODO"
+"Clusters and AWS Resources Topology 1: AWS Calculator Link": "https://calculator.aws/#/estimate?id=86efeaf01469a0bc1eda4ec51a259e9feebff59a"
 "Clusters and AWS Resources Topology 1: Short Description": "Ordinary Experts CONSUL DEMOCRACY Pattern AWS Architecture Diagram"
 "Clusters and AWS Resources Topology 1: Long Description": "The Ordinary Experts CONSUL DEMOCRACY Patterns AWS Architecture Diagram shows the total flow of services from when the customer accesses the CONSUL DEMOCRACY application. The diagram shows the following AWS Services: Amazon Simple Storage System (Amazon S3), Amazon Elastic Compute Cloud (Amazon EC2), Amazon Virtual Public Cloud (Amazon VPC), Amazon Aurora Postgresql, Amazon Secrets Manager, and Amazon ElastiCache."
 "Clusters and AWS Resources Topology 1: CloudFormation Template URL": "https://ordinary-experts-aws-marketplace-pattern-artifacts.s3.amazonaws.com/consuldemocracy/{{version}}/template.yaml"
