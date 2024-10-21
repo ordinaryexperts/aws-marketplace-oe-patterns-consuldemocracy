@@ -38,7 +38,7 @@ An optional email address is collected as part of the CloudFormation parameters 
 "Type": "AMI"
 "us-east-1 AMI ID": "{{ami}}" # final ami id
 "AMI Virtualization Type": "HVM"
-"Architecture": "arm64"
+"Architecture": "x86_64"
 "AFI": ""
 "Operating System": "Ubuntu"
 "Operating System Version": "22.04"
@@ -60,7 +60,7 @@ An optional email address is collected as part of the CloudFormation parameters 
 # region availability fields are here, i.e. "me-south-1 Availability"
 "Make available in all future U.S. regions": "FALSE"
 "Make available in all future non-U.S. regions": "FALSE"
-"Recommended Instance Type": "c7g.medium"
+"Recommended Instance Type": "t3.xlarge"
 "Make available for all future instance types": "FALSE"
 # instance availability fields are here, i.e. "z1d.12xlarge Availability"
 "Pricing Model": "Hourly_Annual"

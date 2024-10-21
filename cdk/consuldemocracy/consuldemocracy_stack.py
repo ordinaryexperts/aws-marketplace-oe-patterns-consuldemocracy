@@ -77,6 +77,16 @@ class ConsuldemocracyStack(Stack):
             description="Optional: The email address to use for the Consul administrator account. If not specified, 'admin@{DnsHostname}' wil be used."
         )
 
+        self.delayed_job_count_param = CfnParameter(
+            self,
+            "DelayedJobCount",
+            default=2,
+            type="Number",
+            min_value=1,
+            max_value=10,
+            description="Required: The number of Delayed Jobs processes to start to process queue events."
+        )
+
         self.admin_email_condition = CfnCondition(
             self,
             "AdminEmailCondition",
@@ -128,6 +138,7 @@ class ConsuldemocracyStack(Stack):
             user_data_contents = user_data,
             user_data_variables={
                 "AssetsBucketName": bucket.bucket_name(),
+                "DelayedJobCount": self.delayed_job_count_param.value_as_string,
                 "DbSecretArn": db_secret.secret_arn(),
                 "Hostname": dns.hostname(),
                 "HostedZoneName": dns.route_53_hosted_zone_name_param.value_as_string,
@@ -187,7 +198,8 @@ class ConsuldemocracyStack(Stack):
                     "default": "Application Config"
                 },
                 "Parameters": [
-                    self.admin_email_param.logical_id
+                    self.admin_email_param.logical_id,
+                    self.delayed_job_count_param.logical_id
                 ]
             }
         ]
@@ -208,6 +220,9 @@ class ConsuldemocracyStack(Stack):
                 "ParameterLabels": {
                     self.admin_email_param.logical_id: {
                         "default": "Consul Admin Email"
+                    },
+                    self.delayed_job_count_param.logical_id: {
+                        "default": "Delayed Job Count"
                     },
                     **alb.metadata_parameter_labels(),
                     **bucket.metadata_parameter_labels(),
