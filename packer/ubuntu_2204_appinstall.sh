@@ -146,7 +146,7 @@ apt-get -y install libpq-dev
 python3 -m pip install ansible psycopg2
 git clone https://github.com/consul/installer /root/installer
 cd /root/installer
-git checkout 2.1.1
+git checkout 2.2.0
 printf "[servers]\nlocalhost ansible_user=root\n" > /root/installer/hosts
 rm /root/installer/hosts.example
 cp -r roles/rails roles/rails_ami
@@ -177,9 +177,9 @@ cat <<EOF > /root/installer/aws_ami.yml
     - memcached
     - timezone
 EOF
-ansible-playbook -v aws_ami.yml --connection=local -i hosts
+ansible-playbook -v aws_ami.yml --connection=local -i hosts -e 'rvm1_gpg_key_servers=["hkp://keys.openpgp.org"]'
 echo "gem 'aws-sdk-s3', '~> 1.144'" >> /home/deploy/consul/current/Gemfile_custom
-ansible-playbook -v aws_ami.yml --connection=local -i hosts
+ansible-playbook -v aws_ami.yml --connection=local -i hosts -e 'rvm1_gpg_key_servers=["hkp://keys.openpgp.org"]'
 rm -rf /home/deploy/.ssh
 rm -rf /root/.ssh
 rm -rf /home/deploy/consul/current/log/*

@@ -3,7 +3,7 @@ import os
 
 import aws_cdk as cdk
 
-from consul.consul_stack import ConsulStack
+from consuldemocracy.consuldemocracy_stack import ConsuldemocracyStack
 
 # OE AWS Marketplace Patterns Dev
 # arn:aws:organizations::440643590597:account/o-kqeqlsvu0w/992593896645
@@ -15,9 +15,10 @@ from consul.consul_stack import ConsulStack
 env_oe_patterns_dev_us_east_1 = cdk.Environment(account="992593896645", region="us-east-1")
 
 app = cdk.App()
-ConsulStack(
+ConsuldemocracyStack(
     app,
-    "oe-patterns-consul-{}".format(os.environ['USER']),
-    env=env_oe_patterns_dev_us_east_1
+    "oe-patterns-consuldemocracy-{}".format(os.environ['USER']),
+    env=env_oe_patterns_dev_us_east_1,
+    synthesizer=cdk.DefaultStackSynthesizer(generate_bootstrap_version_rule=False)
 )
 app.synth()

@@ -172,31 +172,29 @@ ansible-playbook -v aws_boot.yml --connection=local -i hosts
 sed -i "/client_max_body_size/a\  location /elb-check { access_log off; return 200 'ok'; add_header Content-Type text/plain; }" /etc/nginx/sites-enabled/default
 service nginx restart
 
-cat <<EOF > /etc/systemd/system/delayed_job.service
+cat <<EOF > /etc/systemd/system/delayed_job@.service
 [Unit]
-Description=Delayed Job
+Description=Delayed Job %i
 After=network.target
 
 [Service]
-Type=simple
+Type=forking
 User=deploy
 WorkingDirectory=/home/deploy/consul/current
-Environment="PATH=/bin:/usr/bin:/home/deploy/.fnm/:\$PATH"
-Environment="RAILS_ENV=production"
-ExecStart=/usr/bin/bash -c 'eval "\$(fnm env --shell=bash)" && source /home/deploy/.rvm/scripts/rvm && fnm exec bin/delayed_job -m -n 2 restart &>> /home/deploy/consul/current/log/delayed_job.log'
+ExecStart=/usr/bin/bash -lc 'source /home/deploy/.rvm/scripts/rvm && RAILS_ENV=production EXECJS_RUNTIME=Disabled bundle exec bin/delayed_job -i %i start'
+ExecStop=/usr/bin/bash -lc 'source /home/deploy/.rvm/scripts/rvm && RAILS_ENV=production EXECJS_RUNTIME=Disabled bundle exec bin/delayed_job -i %i stop'
+TimeoutSec=120
+PIDFile=/home/deploy/consul/current/tmp/pids/delayed_job.%i.pid
 Restart=always
-RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
-systemctl enable delayed_job
-systemctl start delayed_job
+systemctl enable delayed_job@{1..${DelayedJobCount}}.service
+systemctl start delayed_job@{1..${DelayedJobCount}}.service
 
 wget https://localhost --no-check-certificate
 success=$?
 rm -f index.html
-echo hi
-success=$?
 cfn-signal --exit-code $success --stack ${AWS::StackName} --resource Asg --region ${AWS::Region}
