@@ -4,6 +4,11 @@
 
 product_id: "prod-paiemurjqun6o"
 
+# Flat per-hour price applied to every instance dimension when running
+# scripts/marketplace_reprice.py. Replaces the legacy 67-dimension RateCard.
+flat_price: "0.02"
+offer_id: "2bffk4xxpe53e21hziby5m40a"
+
 # IAM role that allows AWS Marketplace to read the AMI
 ami_access_role_arn: "arn:aws:iam::879777583535:role/AWSMarketplaceAMIScanning"
 
