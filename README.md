@@ -1,5 +1,7 @@
-# aws-marketplace-oe-patterns-consuldemocracy
+# Consul Democracy on AWS by FOSSonCloud
 
-AWS Pattern for [CONSUL DEMOCRACY](https://consuldemocracy.org/) - Citizen Participation and Open Government Application
+A FOSSonCloud AWS Marketplace Product
+
+AWS Pattern for [Consul Democracy](https://consuldemocracy.org/) - the open-source citizen participation and open government platform.
 
 [Try it here](https://aws.amazon.com/marketplace/pp/prodview-tijkkrfhmrvja)

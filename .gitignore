@@ -16,11 +16,20 @@ test/taskcat_outputs
 test/main-test/template.yaml
 test/main-test/taskcat_outputs
 
+# plf
+plf*.xlsx
+
 # distributed files
 dist/*
 
 # packer manifest file
 manifest.json
+
+# packer build logs
+logs/
+
+# marketplace submission changeset ID
+.marketplace_changeset
 
 # shared Makefiles/scripts
 common.mk
