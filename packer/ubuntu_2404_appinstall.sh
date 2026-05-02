@@ -1,6 +1,7 @@
-SCRIPT_VERSION=1.3.0
-SCRIPT_PREINSTALL=ubuntu_2004_2204_preinstall.sh
-SCRIPT_POSTINSTALL=ubuntu_2004_2204_postinstall.sh
+SCRIPT_VERSION=1.10.0
+SCRIPT_PREINSTALL=ubuntu_2204_2404_preinstall.sh
+SCRIPT_POSTINSTALL=ubuntu_2204_2404_postinstall.sh
+CONSUL_DEMOCRACY_VERSION=2.5.0
 
 # preinstall steps
 curl -O "https://raw.githubusercontent.com/ordinaryexperts/aws-marketplace-utilities/$SCRIPT_VERSION/packer_provisioning_scripts/$SCRIPT_PREINSTALL"
@@ -143,10 +144,10 @@ EOF
 # Start Consul setup
 ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
 apt-get -y install libpq-dev
-python3 -m pip install ansible psycopg2
-git clone https://github.com/consul/installer /root/installer
+python3 -m pip install ansible psycopg2 --break-system-packages
+git clone https://github.com/consuldemocracy/installer /root/installer
 cd /root/installer
-git checkout 2.2.0
+git checkout $CONSUL_DEMOCRACY_VERSION
 printf "[servers]\nlocalhost ansible_user=root\n" > /root/installer/hosts
 rm /root/installer/hosts.example
 cp -r roles/rails roles/rails_ami
@@ -177,9 +178,9 @@ cat <<EOF > /root/installer/aws_ami.yml
     - memcached
     - timezone
 EOF
-ansible-playbook -v aws_ami.yml --connection=local -i hosts -e 'rvm1_gpg_key_servers=["hkp://keys.openpgp.org"]'
+ansible-playbook -v aws_ami.yml --connection=local -i hosts -e 'rvm1_gpg_key_servers=["hkp://keys.openpgp.org"]' -e ssh_public_key_path=/root/.ssh/id_rsa.pub -e ansible_ssh_private_key_file=/root/.ssh/id_rsa || exit 1
 echo "gem 'aws-sdk-s3', '~> 1.144'" >> /home/deploy/consul/current/Gemfile_custom
-ansible-playbook -v aws_ami.yml --connection=local -i hosts -e 'rvm1_gpg_key_servers=["hkp://keys.openpgp.org"]'
+ansible-playbook -v aws_ami.yml --connection=local -i hosts -e 'rvm1_gpg_key_servers=["hkp://keys.openpgp.org"]' -e ssh_public_key_path=/root/.ssh/id_rsa.pub -e ansible_ssh_private_key_file=/root/.ssh/id_rsa || exit 1
 rm -rf /home/deploy/.ssh
 rm -rf /root/.ssh
 rm -rf /home/deploy/consul/current/log/*
@@ -213,7 +214,7 @@ cat <<EOF > /root/installer/aws_boot.yml
     - puma
 EOF
 
-pip install boto3
+python3 -m pip install boto3 --break-system-packages
 cat <<EOF > /root/check-secrets.py
 #!/usr/bin/env python3
 
