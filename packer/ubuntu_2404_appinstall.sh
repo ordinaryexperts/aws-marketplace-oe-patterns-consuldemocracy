@@ -1,7 +1,7 @@
-SCRIPT_VERSION=1.10.0
+SCRIPT_VERSION=1.10.3
 SCRIPT_PREINSTALL=ubuntu_2204_2404_preinstall.sh
 SCRIPT_POSTINSTALL=ubuntu_2204_2404_postinstall.sh
-CONSUL_DEMOCRACY_VERSION=2.5.0
+CONSUL_DEMOCRACY_VERSION=2.5.1
 
 # preinstall steps
 curl -O "https://raw.githubusercontent.com/ordinaryexperts/aws-marketplace-utilities/$SCRIPT_VERSION/packer_provisioning_scripts/$SCRIPT_PREINSTALL"
