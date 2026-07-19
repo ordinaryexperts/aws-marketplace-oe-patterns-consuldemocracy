@@ -5,7 +5,7 @@
 application:
   name: "Consul Democracy"
   health_endpoint: "/elb-check"
-  expected_version: "2.5.0"
+  expected_version: "2.5.1"
 
 # AWS Configuration
 aws:
