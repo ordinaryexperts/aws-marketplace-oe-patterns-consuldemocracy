@@ -69,3 +69,69 @@ delivery_option:
     - Route 53 hosted zone for DNS
     - ACM certificate for HTTPS
   architecture_diagram_url: "https://ordinary-experts-aws-marketplace-pattern-artifacts.s3.amazonaws.com/consuldemocracy/2.0.0/diagram.png"
+
+# Used by scripts/marketplace_rebrand.py (utilities 1.9.4+) to submit an
+# UpdateInformation change set rebranding the live AWS Marketplace product
+# from the legacy "Ordinary Experts CONSUL DEMOCRACY Pattern" wording to the
+# FOSSonCloud style.
+logo_url: "https://ordinary-experts-aws-marketplace-pattern-artifacts.s3.amazonaws.com/fossoncloud-logo.png"
+
+product_info:
+  title: "Consul Democracy on AWS by FOSSonCloud"
+  short_description: >-
+    Consul Democracy on AWS by FOSSonCloud is a custom AMI + open-source AWS
+    CloudFormation template that provisions a production-ready, AWS
+    infrastructure solution for deploying Consul Democracy v2.5.0.
+  long_description: |
+    Consul Democracy on AWS by FOSSonCloud is an open-source AWS
+    CloudFormation template that offers an easy-to-install AWS infrastructure
+    solution for quickly deploying Consul Democracy, using both AWS and
+    Consul Democracy best practices.
+
+    Consul Democracy is the open-source citizen participation platform
+    originally developed by the city of Madrid; it powers proposals, debates,
+    voting and participatory budgeting for governments and civic organizations
+    worldwide.
+
+    Automatically configured to support auto-scaling through AWS Auto Scaling
+    Groups, this solution leverages an S3 bucket with CloudFront for user
+    generated content between application servers. It configures SES with
+    Easy DKIM for emails, and configures Route 53 with convenient DNS entries.
+
+    The template ensures multi-level security by incorporating AWS IAM for
+    federated access to resources with least privilege and AWS managed keys
+    and Secrets Manager to manage secrets for encryption of data at rest and
+    in transit.
+
+    We support multiple availability zones using an RDS Aurora PostgreSQL
+    cluster and EC2 Auto Scaling Groups.
+
+    An optional email address is collected as part of the CloudFormation
+    parameters as the AdminEmail parameter. This email is used as the initial
+    login for the Consul Democracy instance and is not shared with any third
+    party.
+  highlights:
+    - "Production-ready Consul Democracy v2.5.0 site, with search, email, and caching"
+    - "Integrated with AWS Certificate Manager for HTTPS support"
+    - "Logs in CloudWatch Logs, Remote access via Session Manager"
+  categories:
+    - "Application Stacks"
+    - "Media & Entertainment"
+    - "Content Management"
+  search_keywords:
+    - "consul"
+    - "democracy"
+    - "social"
+    - "voting"
+    - "debate"
+  resources:
+    - name: "FOSSonCloud Product Page"
+      url:  "https://fossoncloud.com/products/consuldemocracy"
+    - name: "Github Source Code and Documentation"
+      url:  "https://github.com/ordinaryexperts/aws-marketplace-oe-patterns-consuldemocracy"
+    - name: "Consul Democracy Homepage"
+      url:  "https://consuldemocracy.org/"
+  support_description: |
+    Email support offered with subscription.
+    https://fossoncloud.com/products/consuldemocracy
+  sku: "OE_PATTERNS_CONSULDEMOCRACY"

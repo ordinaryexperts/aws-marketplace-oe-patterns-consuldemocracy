@@ -1,5 +1,13 @@
 # Unreleased
 
+# 2.0.1
+
+* Upgrade Consul Democracy to 2.5.1 (from 2.5.0) - dependency-only patch release (gem/npm bumps), no Ruby/Node/Rails version changes
+* Upgrade aws-marketplace-utilities packer scripts to 1.10.3 (from 1.10.0) - picks up an EFS-utils build reliability fix (cmake/golang-go/rustup toolchain)
+* Introduce versioned AMI parameter `AsgAmiIdv201` (from `AsgAmiIdv200`)
+* Fix `Dockerfile` missing `test/integration/requirements.txt` install - `make test-integration` had no pytest available
+* Fix `docker-compose.yml` not passing `TEST_BASE_URL`/`TEST_STACK_NAME` through to the container, so integration test overrides were silently ignored
+
 # 2.0.0
 
 * Upgrade Consul Democracy to 2.5.0 (from 2.2.0)
